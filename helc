@@ -1,0 +1,50 @@
+require "Hellenna.env.paroot-environment"
+local parser_path_unix  = "Hellenna/parser/parser.lua"
+local parser_path_win32 = parser_path_unix:gsub("/","\\")
+
+-- lua ocamlc <file> -o <release>
+-- lua ocamlc <file> -b <release
+
+
+--@transpile to Golang (.go)
+function go_transpile()
+    os.execute("lua "..parser_path_win32.." "..arg[1].." -o "..arg[3]..".o")
+    os.execute("lua "..arg[3]..".o")
+end
+
+
+--@build a binary executable
+function go_build()
+    os.execute("lua "..parser_path_win32.." "..arg[1].." -o "..arg[3]..".o")
+    os.execute("lua "..arg[3]..".o")
+    os.execute("kotlinc "..arg[3]..".kt -include-runtime -d "..arg[3]..".jar")
+end
+
+
+--@autorun
+function go_run()
+    os.execute("lua "..parser_path_win32.." "..arg[1].." -o "..arg[3]..".o")
+    os.execute("lua "..arg[3]..".o")
+    os.execute("kotlinc "..arg[3]..".kt -include-runtime -d "..arg[3]..".jar")
+    os.execute("java -jar "..arg[3]..".jar")
+end
+
+
+--@logic
+if arg[2] == "-o" or arg[2] == "--transpile" then
+    go_transpile()
+
+elseif arg[2] == "--run" then
+    go_run()
+
+elseif arg[2] == "--build" then
+    go_build()
+else
+    print("\nTranslate to GoLang source code  (.go):          lua langc <source> --transpile <out>")
+    print("Build and run namespace:                         lua langc <source> --run <out>")
+    print("Or build a binary file  (.exe):                  lua langc <source> --build <out>\n")
+    
+    print("<source> = foo.x")
+    print("<out> = foo\n\n")
+
+end
