@@ -41,11 +41,13 @@ function let(name,value)
 
     if name:find(":") ~= nil then
         --@exists explicit declaration
-        if n:sub(1,1) == "$" then
+        if n:sub(1,1) == "$"
+        or n:sub(1,1) == "@" then
             if value:sub(1,1) == "&" then
                 file:write("var "..n:sub(2)..":"..t.." = \""..value:sub(2).."\"\n")
 
-            elseif value:sub(1,1) == "$" then
+            elseif value:sub(1,1) == "$"
+            or value:sub(1,1) == "@" then
                 file:write("var "..n:sub(2)..":"..t.." = "..value:sub(2).."\n")
             else
                 file:write("var "..n:sub(2)..":"..t.." = "..value.."\n")
@@ -80,32 +82,13 @@ end
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 --@ var(|my_variable|, "&Hello world")
 --@ var(|my_variable|, |136|)
 --@ var(|my_variable|, |another_variable|)
 function var(name,value)
-    if value:sub(1,1) == "&" then
+    if value:sub(1,1) == "&"
+    or value:sub(1,1) == "$" 
+    or value:sub(1,1) == "@" then
         -- String:      &Arnold
         file:write(name:sub(2).." = \""..value.."\"",'\n')
     else
